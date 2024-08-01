@@ -201,7 +201,7 @@ export default function Page() {
                             <button 
                                 className={_sbtButtonClass}
                                 onClick={() => { submitWord();}}
-                                disabled = {selectedWord.length == guessWord.length}
+                                //disabled = {selectedWord.length == guessWord.length}
                             >
                                 Submit
                             </button>
@@ -222,7 +222,7 @@ export default function Page() {
             return (
                 <div className="flex justify-center w-full h-full">
                     <div className="relative bg-orange-300 w-5/6 h-5/6 top-5">
-                        <button onClick={() => { setGameState("game-init") }} >Restart Game?</button>}
+                        <button onClick={() => { setGameState("game-init") }} >Restart Game?</button>
                     </div>
                 </div>
             )
