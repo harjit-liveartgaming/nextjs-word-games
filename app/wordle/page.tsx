@@ -172,22 +172,36 @@ export default function Page() {
                 break;
 
             case "game-start":
+                const _sbtButtonClass: string = `
+                    bg-blue-500 
+                    hover:bg-blue-400 
+                    text-white 
+                    font-bold 
+                    py-2 
+                    px-4 
+                    border-b-4 
+                    border-blue-700 
+                    hover:border-blue-500 
+                    rounded
+                `
                 return (
 
                     <div>
-                        <div className='flex justify-center items-center'>
-                            <label className="p-2 text-center justify-center w-2/5">Enter Guess</label>
-                            <input className="p-2 border-2 w-2/5 justify-center"
+                        <div className='items-center text-center w-full'>
+                            <label className="p-2 w-3/5">Enter Guess</label>
+                            <input className="p-2 border-2 w-4/5"
                                 type="text"
                                 value={guessWord}
                                 onChange={(e: React.FormEvent<HTMLInputElement>) => {
-                                    setGuess(e.currentTarget.value);
+                                    updateGuessWord(e);
                                 }}
                             />
                         </div>
-                        <div className='w-full flex p-5 items-center justify-center text-center'>
-                            <button className="p-2 border-2 w-3/5"
-                                onClick={() => { submitWord() }}
+                        <div className='p-5 items-center text-center'>
+                            <button 
+                                className={_sbtButtonClass}
+                                onClick={() => { submitWord();}}
+                                disabled = {selectedWord.length == guessWord.length}
                             >
                                 Submit
                             </button>
