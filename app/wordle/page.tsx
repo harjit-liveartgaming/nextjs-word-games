@@ -1,37 +1,44 @@
 "use client";
 
 import React, { useState, useRef } from "react";
-import { TileComponent } from '@/app/wordle/components/tile';
 import { TileRow, TileRowComponent } from "./components/tile-row";
 import { GameBoardComponent } from "./components/game-board";
 import { InputFieldComponent } from "./components/forms";
+import { getRandomWord } from "./components/words";
+
 
 export default function Page() {
 
     const [gameBoard, setGameBoard] = useState(Array<TileRow>);
-    const [gameState, setGameState] = useState("form-set-attempts");
-    const [selectedWord, setWord] = useState("telly");
+    const [gameState, setGameState] = useState("set-up-form");
+    const [selectedWord, setWord] = useState("");
     const [guessWord, setGuess] = useState("");
     const [maxAttempts, setMaxAttempts] = useState(6);
     const [currentAttempt, setCurrentAttempt] = useState(0);
     const [room, setRoom] = useState("huhu");
 
-    let initializeGame = () => {
+    let initializeGame = (_word?: string, _maxAttempts?: number) => {
         let count = 0;
-        while (count < maxAttempts) {
-            let tr = new TileRow(selectedWord.length)
-            if(gameBoard.length < count){
+        let p_word: string = _word || getRandomWord();
+        //for some reason, I can't clear the array first
+        //so I'm just replacing value in the array with a new one
+
+        while (count < (_maxAttempts || maxAttempts)) {
+            let tr = new TileRow(p_word.length)
+            if (gameBoard.length < count) {
                 gameBoard.push(tr);
-            }else{
+            } else {
                 gameBoard[count] = tr;
             }
             count++
         }
-
+        if (_maxAttempts != null && _maxAttempts != maxAttempts) {
+            setMaxAttempts(_maxAttempts);
+        }
+        setWord(p_word);
         setGameBoard(gameBoard);
         setCurrentAttempt(0);
         setGameState("game-start");
-
     }
 
     let updateGuessWord = (e: React.FormEvent<HTMLInputElement>) => {
@@ -47,66 +54,67 @@ export default function Page() {
     }
 
     let submitWord = () => {
+        if (guessWord.length == selectedWord.length) {
+            let gScan = new Map();
+            let wScan = new Map();
 
-        let gScan = new Map();
-        let wScan = new Map();
+            let perfect = true;
 
-        let perfect = true;
+            for (let i = 0; i < guessWord.length; i++) {
+                let _gl = guessWord[i]
+                let _wl = selectedWord[i]
 
-        for (let i = 0; i < guessWord.length; i++) {
-            let _gl = guessWord[i]
-            let _wl = selectedWord[i]
-
-            if (_gl == _wl) {
-                gameBoard[currentAttempt].tiles[i].status = 'correct-location'
-            } else {
-                perfect = false;
-                let _gs: Array<number>;
-                if (gScan.has(_gl)) {
-                    _gs = gScan.get(_gl);
+                if (_gl == _wl) {
+                    gameBoard[currentAttempt].tiles[i].status = 'correct-location'
                 } else {
-                    _gs = new Array<number>();
-                }
-
-                _gs.push(i);
-                gScan.set(_gl, _gs);
-
-                let _ws: Array<number>;
-                if (wScan.has(_wl)) {
-                    _ws = wScan.get(_wl);
-                } else {
-                    _ws = new Array<number>();
-                }
-
-                _ws.push(i);
-                wScan.set(_wl, _ws);
-            }
-        }
-        
-        if (!perfect) {
-            gScan.forEach((g_is: Array<number>, l: string) => {
-                let w_is = wScan.get(l);
-                
-                for (let i = 0; i < g_is.length; i++) {
-                    let g_index = g_is[i] as number;
-                    if (w_is != null && i < w_is.length) {
-                        gameBoard[currentAttempt].tiles[g_index].status = 'correct-letter'
+                    perfect = false;
+                    let _gs: Array<number>;
+                    if (gScan.has(_gl)) {
+                        _gs = gScan.get(_gl);
                     } else {
-                         gameBoard[currentAttempt].tiles[g_index].status = 'submitted'
+                        _gs = new Array<number>();
                     }
+
+                    _gs.push(i);
+                    gScan.set(_gl, _gs);
+
+                    let _ws: Array<number>;
+                    if (wScan.has(_wl)) {
+                        _ws = wScan.get(_wl);
+                    } else {
+                        _ws = new Array<number>();
+                    }
+
+                    _ws.push(i);
+                    wScan.set(_wl, _ws);
                 }
-            })
-            setCurrentAttempt(currentAttempt + 1);
-        }
-        
-        if(perfect || currentAttempt == maxAttempts){
-            setGameState("end-game")
+            }
+
+            if (!perfect) {
+                gScan.forEach((g_is: Array<number>, l: string) => {
+                    let w_is = wScan.get(l);
+
+                    for (let i = 0; i < g_is.length; i++) {
+                        let g_index = g_is[i] as number;
+                        if (w_is != null && i < w_is.length) {
+                            gameBoard[currentAttempt].tiles[g_index].status = 'correct-letter'
+                        } else {
+                            gameBoard[currentAttempt].tiles[g_index].status = 'submitted'
+                        }
+                    }
+                })
+                setCurrentAttempt(currentAttempt + 1);
+            }
+
+            if (perfect || currentAttempt == maxAttempts) {
+                setGameState("end-game")
+            }
+
+
+            setGameBoard(gameBoard);
+            setGuess("");
         }
 
-        
-        setGameBoard(gameBoard);
-        setGuess("");
-        
     }
 
     if (gameState == "game-init") {
@@ -115,40 +123,51 @@ export default function Page() {
 
     let getInputContent = () => {
         switch (gameState) {
-            case "form-challenge":
+            case "set-up-form":
                 return (
-                    <InputFieldComponent
-                        label="Enter a room name"
-                        inputType="text"
-                        onChange={(e: React.FormEvent<HTMLInputElement>) => { setRoom(e.currentTarget.value); return false; }}
-                        onSubmit={() => { setGameState("form-set-word"); return false; }}
-                        value={room}
-                    />
-                )
-                break;
-
-            case "form-set-word":
-                return (
-                    <InputFieldComponent
-                        label="Enter a word"
-                        inputType="text"
-                        onChange={(e: React.FormEvent<HTMLInputElement>) => { setWord(e.currentTarget.value); return false; }}
-                        onSubmit={() => { setGameState("form-set-attempts"); return false; }}
-                        value={selectedWord}
-                    />
-
-                )
-                break;
-
-            case "form-set-attempts":
-                return (
-                    <InputFieldComponent
-                        label="Enter attempts"
-                        inputType="number"
-                        onChange={(e: React.FormEvent<HTMLInputElement>) => { setMaxAttempts(e.currentTarget.valueAsNumber); return false; }}
-                        onSubmit={() => { initializeGame(); return false; }}
-                        value={maxAttempts}
-                    />
+                    <>
+                        <div className="">
+                            <div className="p-2">
+                                <div className='w-full flex p-2'>
+                                    <label className="p-2 text-right w-full">Enter a room name</label>
+                                    <input className="p-2 border-2"
+                                        type="text"
+                                        value={room}
+                                        onChange={(e: React.FormEvent<HTMLInputElement>) => {
+                                            setRoom(e.currentTarget.value);
+                                        }}
+                                    />
+                                </div>
+                                <div className='w-full flex p-2'>
+                                    <label className="p-2 text-right w-full">Enter a word</label>
+                                    <input className="p-2 border-2"
+                                        type="text"
+                                        value={selectedWord}
+                                        onChange={(e: React.FormEvent<HTMLInputElement>) => {
+                                            setWord(e.currentTarget.value);
+                                        }}
+                                    />
+                                </div>
+                                <div className='w-full flex p-2'>
+                                    <label className="p-2 text-right w-full">Enter a room name</label>
+                                    <input className="p-2 border-2"
+                                        type="number"
+                                        value={maxAttempts}
+                                        onChange={(e: React.FormEvent<HTMLInputElement>) => {
+                                            setMaxAttempts(e.currentTarget.valueAsNumber);
+                                        }}
+                                    />
+                                </div>
+                                <div className='w-full flex p-5 items-center justify-center text-center'>
+                                    <button className="p-2 border-2 w-3/5"
+                                        onClick={() => { initializeGame(selectedWord, maxAttempts) }}
+                                    >
+                                        Start
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </>
                 )
                 break;
 
@@ -156,13 +175,23 @@ export default function Page() {
                 return (
 
                     <div>
-                        <InputFieldComponent
-                            label="Enter Guess"
-                            inputType="text"
-                            onSubmit={() => { submitWord(); return false; }}
-                            onChange={(e: React.FormEvent<HTMLInputElement>) => { updateGuessWord(e); return false }}
-                            value={guessWord}
-                        />
+                        <div className='flex justify-center items-center'>
+                            <label className="p-2 text-center justify-center w-2/5">Enter Guess</label>
+                            <input className="p-2 border-2 w-2/5 justify-center"
+                                type="text"
+                                value={guessWord}
+                                onChange={(e: React.FormEvent<HTMLInputElement>) => {
+                                    setGuess(e.currentTarget.value);
+                                }}
+                            />
+                        </div>
+                        <div className='w-full flex p-5 items-center justify-center text-center'>
+                            <button className="p-2 border-2 w-3/5"
+                                onClick={() => { submitWord() }}
+                            >
+                                Submit
+                            </button>
+                        </div>
 
                     </div>
                 )
@@ -175,18 +204,18 @@ export default function Page() {
 
     let getPopUpContent = () => {
 
-        if(gameState=="end-game"){
+        if (gameState == "end-game") {
             return (
                 <div className="flex justify-center w-full h-full">
                     <div className="relative bg-orange-300 w-5/6 h-5/6 top-5">
-                        <button onClick={()=>{setGameState("game-init")}} >Restart Game?</button>}
+                        <button onClick={() => { setGameState("game-init") }} >Restart Game?</button>}
                     </div>
                 </div>
             )
         }
-        
 
-        
+
+
     }
 
     const input_content = getInputContent();

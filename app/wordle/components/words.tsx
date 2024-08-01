@@ -13,7 +13,9 @@ export const WordBank = [
     "broil"
 ];
 
-export function getRandomWord(){
-    let rIndex = (Math.random() * (WordBank.length - 1))/1
+export function getRandomWord(): string {
+    let rIndex: number = (Math.random() * WordBank.length)
+    //round down to whole number
+    rIndex -= rIndex % 1;
     return WordBank[rIndex]
 }
