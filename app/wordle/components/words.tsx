@@ -1,4 +1,4 @@
-export const WordBank = [
+const WordBank = [
     "telly",
     "hello",
     "pious",

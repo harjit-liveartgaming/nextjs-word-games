@@ -128,8 +128,8 @@ export default function Page() {
                     <>
                         <div className="">
                             <div className="p-2">
-                                <div className='w-full flex p-2'>
-                                    <label className="p-2 text-right w-full">Enter a room name</label>
+                                <div className='w-full justify-center items-center flex p-2'>
+                                    <label className="p-2 text-left w-2/5">Enter a room name</label>
                                     <input className="p-2 border-2"
                                         type="text"
                                         value={room}
@@ -138,8 +138,8 @@ export default function Page() {
                                         }}
                                     />
                                 </div>
-                                <div className='w-full flex p-2'>
-                                    <label className="p-2 text-right w-full">Enter a word</label>
+                                <div className='w-full flex justify-center items-center p-2'>
+                                    <label className="p-2 text-left w-2/5">Enter a word</label>
                                     <input className="p-2 border-2"
                                         type="text"
                                         value={selectedWord}
@@ -148,8 +148,8 @@ export default function Page() {
                                         }}
                                     />
                                 </div>
-                                <div className='w-full flex p-2'>
-                                    <label className="p-2 text-right w-full">Enter a room name</label>
+                                <div className='w-full flex justify-center items-center p-2 '>
+                                    <label className="p-2 text-left w-2/5">Enter attempts</label>
                                     <input className="p-2 border-2"
                                         type="number"
                                         value={maxAttempts}
@@ -189,7 +189,7 @@ export default function Page() {
                     <div>
                         <div className='items-center text-center w-full'>
                             <label className="p-2 w-3/5">Enter Guess</label>
-                            <input className="p-2 border-2 w-4/5"
+                            <input className="p-2 border-2 w-2/5"
                                 type="text"
                                 value={guessWord}
                                 onChange={(e: React.FormEvent<HTMLInputElement>) => {
