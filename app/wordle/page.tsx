@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { startTransition, useState, useTransition } from "react";
 import { TileRow, TileRowComponent } from "./components/tile-row";
 import { GameBoardComponent } from "./components/game-board";
-import { InputFieldComponent } from "./components/forms";
 import { getRandomWord } from "./components/words";
-
+import { fetchChallenge } from "./db/data";
 
 export default function Page() {
 
@@ -40,6 +39,16 @@ export default function Page() {
         setCurrentAttempt(0);
         setGameState("game-start");
     }
+
+    let joinChallenge = (id: string) => {
+        startTransition(async () => {
+            console.log("before await");
+            let challenge = await fetchChallenge(id);
+            console.log("after: " + challenge);
+            initializeGame(challenge.word, challenge.attempts);
+        })
+    }
+
 
     let updateGuessWord = (e: React.FormEvent<HTMLInputElement>) => {
         let guess = e.currentTarget.value;
@@ -125,9 +134,7 @@ export default function Page() {
         switch (gameState) {
             case "set-up-form":
                 return (
-                    <>
-                        <div className="">
-                            <div className="p-2">
+                    <>      
                                 <div className='w-full flex p-2'>
                                     <label className="p-2 text-right w-full">Enter a room name</label>
                                     <input className="p-2 border-2"
@@ -137,6 +144,13 @@ export default function Page() {
                                             setRoom(e.currentTarget.value);
                                         }}
                                     />
+                                </div>
+                                <div className='w-full flex p-5 items-center justify-center text-center'>
+                                    <button className="p-2 border-2 w-3/5"
+                                        onClick={() => { joinChallenge(room) }}
+                                    >
+                                        Join
+                                    </button>
                                 </div>
                                 <div className='w-full flex p-2'>
                                     <label className="p-2 text-right w-full">Enter a word</label>
@@ -165,8 +179,6 @@ export default function Page() {
                                         Start
                                     </button>
                                 </div>
-                            </div>
-                        </div>
                     </>
                 )
                 break;
@@ -189,7 +201,7 @@ export default function Page() {
                     <div>
                         <div className='items-center text-center w-full'>
                             <label className="p-2 w-3/5">Enter Guess</label>
-                            <input className="p-2 border-2 w-4/5"
+                            <input className="p-2 border-2 w-3/5"
                                 type="text"
                                 value={guessWord}
                                 onChange={(e: React.FormEvent<HTMLInputElement>) => {

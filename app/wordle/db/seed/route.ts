@@ -9,7 +9,7 @@ async function seedUsers() {
   await client.sql`
     CREATE TABLE IF NOT EXISTS users (
       id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-      name VARCHAR(255) NOT NULL,
+      displayName VARCHAR(255) NOT NULL,
       email TEXT NOT NULL UNIQUE,
       password TEXT NOT NULL
     );
@@ -35,7 +35,7 @@ async function seedChallenges() {
     await client.sql`
     CREATE TABLE IF NOT EXISTS challenges (
         id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-        author_id UUID NOT NULL,
+        author_id UUID NOT NULL references users(id),
         word VARCHAR(255) NOT NULL,
         attempts INT NOT NULL,
         expiration_date DATE NOT NULL
@@ -54,4 +54,33 @@ async function seedChallenges() {
 
     return insertedInvoices;
 }
+
+async function seedAttempts() {
+  await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
+
+  await client.sql`
+  CREATE TABLE IF NOT EXISTS attempts (
+      id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+      challenge_id UUID NOT NULL references challenges(id),
+      guess VARCHAR(255) NOT NULL,
+      attempt_number INT NOT NULL
+  );`;
+
+}
+
+export async function GET() {
+    try {
+    await client.sql`BEGIN`;
+    await seedUsers();
+    await seedChallenges();
+    await seedAttempts();
+    await client.sql`COMMIT`;
+
+    return Response.json({ message: 'Database seeded successfully' });
+    } catch (error) {
+    await client.sql`ROLLBACK`;
+    return Response.json({ error }, { status: 500 });
+    }
+  }
+  
 

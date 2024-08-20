@@ -1,15 +1,9 @@
-export type User = {
-    id: string;
-    displayName: string;
-    email: string;
-    password: string;
-}
-
 export type Challenge = {
     id: string;
     author: string;
     word: string;
     attempts: number;
+    expiration: Date;
 }
 
 export type Attempt = {
