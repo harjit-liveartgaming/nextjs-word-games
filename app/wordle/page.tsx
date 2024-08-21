@@ -42,9 +42,7 @@ export default function Page() {
 
     let joinChallenge = (id: string) => {
         startTransition(async () => {
-            console.log("before await");
             let challenge = await fetchChallenge(id);
-            console.log("after: " + challenge);
             initializeGame(challenge.word, challenge.attempts);
         })
     }
@@ -134,51 +132,51 @@ export default function Page() {
         switch (gameState) {
             case "set-up-form":
                 return (
-                    <>      
-                                <div className='w-full flex p-2'>
-                                    <label className="p-2 text-right w-full">Enter a room name</label>
-                                    <input className="p-2 border-2"
-                                        type="text"
-                                        value={room}
-                                        onChange={(e: React.FormEvent<HTMLInputElement>) => {
-                                            setRoom(e.currentTarget.value);
-                                        }}
-                                    />
-                                </div>
-                                <div className='w-full flex p-5 items-center justify-center text-center'>
-                                    <button className="p-2 border-2 w-3/5"
-                                        onClick={() => { joinChallenge(room) }}
-                                    >
-                                        Join
-                                    </button>
-                                </div>
-                                <div className='w-full flex p-2'>
-                                    <label className="p-2 text-right w-full">Enter a word</label>
-                                    <input className="p-2 border-2"
-                                        type="text"
-                                        value={selectedWord}
-                                        onChange={(e: React.FormEvent<HTMLInputElement>) => {
-                                            setWord(e.currentTarget.value);
-                                        }}
-                                    />
-                                </div>
-                                <div className='w-full flex justify-center items-center p-2 '>
-                                    <label className="p-2 text-left w-2/5">Enter attempts</label>
-                                    <input className="p-2 border-2"
-                                        type="number"
-                                        value={maxAttempts}
-                                        onChange={(e: React.FormEvent<HTMLInputElement>) => {
-                                            setMaxAttempts(e.currentTarget.valueAsNumber);
-                                        }}
-                                    />
-                                </div>
-                                <div className='w-full flex p-5 items-center justify-center text-center'>
-                                    <button className="p-2 border-2 w-3/5"
-                                        onClick={() => { initializeGame(selectedWord, maxAttempts) }}
-                                    >
-                                        Start
-                                    </button>
-                                </div>
+                    <>
+                        <div className='w-full flex p-2'>
+                            <label className="p-2 text-right w-full">Enter a room name</label>
+                            <input className="p-2 border-2"
+                                type="text"
+                                value={room}
+                                onChange={(e: React.FormEvent<HTMLInputElement>) => {
+                                    setRoom(e.currentTarget.value);
+                                }}
+                            />
+                        </div>
+                        <div className='w-full flex p-5 items-center justify-center text-center'>
+                            <button className="p-2 border-2 w-3/5"
+                                onClick={() => { joinChallenge(room) }}
+                            >
+                                Join
+                            </button>
+                        </div>
+                        <div className='w-full flex p-2'>
+                            <label className="p-2 text-right w-full">Enter a word</label>
+                            <input className="p-2 border-2"
+                                type="text"
+                                value={selectedWord}
+                                onChange={(e: React.FormEvent<HTMLInputElement>) => {
+                                    setWord(e.currentTarget.value);
+                                }}
+                            />
+                        </div>
+                        <div className='w-full flex justify-center items-center p-2 '>
+                            <label className="p-2 text-left w-2/5">Enter attempts</label>
+                            <input className="p-2 border-2"
+                                type="number"
+                                value={maxAttempts}
+                                onChange={(e: React.FormEvent<HTMLInputElement>) => {
+                                    setMaxAttempts(e.currentTarget.valueAsNumber);
+                                }}
+                            />
+                        </div>
+                        <div className='w-full flex p-5 items-center justify-center text-center'>
+                            <button className="p-2 border-2 w-3/5"
+                                onClick={() => { initializeGame(selectedWord, maxAttempts) }}
+                            >
+                                Start
+                            </button>
+                        </div>
                     </>
                 )
                 break;
@@ -210,10 +208,10 @@ export default function Page() {
                             />
                         </div>
                         <div className='p-5 items-center text-center'>
-                            <button 
+                            <button
                                 className={_sbtButtonClass}
-                                onClick={() => { submitWord();}}
-                                //disabled = {selectedWord.length == guessWord.length}
+                                onClick={() => { submitWord(); }}
+                            //disabled = {selectedWord.length == guessWord.length}
                             >
                                 Submit
                             </button>

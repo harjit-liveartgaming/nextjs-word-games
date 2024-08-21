@@ -10,20 +10,20 @@ import { Challenge } from "../db/definitions";
 
 export const GameContext = createContext({});
 
-export default function Game(){
-    const [gameBoard, setGameBoard] = useState(Array<TileRow>);
-    const [gameState, setGameState] = useState("set-up-form");
-    const [selectedWord, setWord] = useState("");
-    const [guessWord, setGuess] = useState("");
-    const [maxAttempts, setMaxAttempts] = useState(6);
-    const [currentAttempt, setCurrentAttempt] = useState(0);
-    const [room, setRoom] = useState("huhu");
+export default function Game() {
+  const [gameBoard, setGameBoard] = useState(Array<TileRow>);
+  const [gameState, setGameState] = useState("set-up-form");
+  const [selectedWord, setWord] = useState("");
+  const [guessWord, setGuess] = useState("");
+  const [maxAttempts, setMaxAttempts] = useState(6);
+  const [currentAttempt, setCurrentAttempt] = useState(0);
+  const [room, setRoom] = useState("huhu");
 
-    const ctx = {
-        
-    }
+  const ctx = {
 
-    return (
-        <></>
-    )
+  }
+
+  return (
+    <></>
+  )
 }
