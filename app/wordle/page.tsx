@@ -34,7 +34,7 @@ export default function Page() {
         if (_maxAttempts != null && _maxAttempts != maxAttempts) {
             setMaxAttempts(_maxAttempts);
         }
-        setWord(p_word);
+        setWord(p_word.toUpperCase());
         setGameBoard(gameBoard);
         setCurrentAttempt(0);
         setGameState("game-start");
@@ -51,7 +51,7 @@ export default function Page() {
 
 
     let updateGuessWord = (e: React.FormEvent<HTMLInputElement>) => {
-        let guess = e.currentTarget.value;
+        let guess = e.currentTarget.value.toUpperCase();
 
         for (let i = 0; i < selectedWord.length; i++) {
             gameBoard[currentAttempt].tiles[i].letter = guess[i] || ""
