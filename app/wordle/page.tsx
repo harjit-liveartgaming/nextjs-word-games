@@ -162,8 +162,8 @@ export default function Page() {
                                         }}
                                     />
                                 </div>
-                                <div className='w-full flex p-2'>
-                                    <label className="p-2 text-right w-full">Enter a room name</label>
+                                <div className='w-full flex justify-center items-center p-2 '>
+                                    <label className="p-2 text-left w-2/5">Enter attempts</label>
                                     <input className="p-2 border-2"
                                         type="number"
                                         value={maxAttempts}
