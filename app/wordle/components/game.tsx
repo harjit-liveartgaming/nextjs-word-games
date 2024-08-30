@@ -3,7 +3,6 @@
 import React, { useState, createContext } from "react";
 import { TileRow, TileRowComponent } from "../components/tile-row";
 import { GameBoardComponent } from "../components/game-board";
-import { InputFieldComponent } from "../components/forms";
 import { getRandomWord } from "../components/words";
 import { fetchChallenge } from "../db/data";
 import { Challenge } from "../db/definitions";
