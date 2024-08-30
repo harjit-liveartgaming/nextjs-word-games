@@ -29,13 +29,27 @@ async function seedUsers() {
   return insertedUsers;
 }
 
+async function seedSessions(){
+  await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
+
+    await client.sql`
+    CREATE TABLE IF NOT EXISTS sessions (
+        id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+        user_id UUID references users(id)
+    );
+    `;
+
+    return true;
+}
+
 async function seedChallenges() {
     await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
 
     await client.sql`
     CREATE TABLE IF NOT EXISTS challenges (
         id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-        author_id UUID NOT NULL references users(id),
+        nickname VARCHAR(255) UNIQUE NOT NULL,
+        author_id UUID references users(id),
         word VARCHAR(255) NOT NULL,
         attempts INT NOT NULL,
         expiration_date DATE NOT NULL
@@ -45,8 +59,8 @@ async function seedChallenges() {
     const insertedInvoices = await Promise.all(
     challenges.map(
         (challenge) => client.sql`
-        INSERT INTO challenges (author_id, word, attempts, expiration_date)
-        VALUES (${challenge.author}, ${challenge.word}, ${challenge.attempts}, ${challenge.expiration})
+        INSERT INTO challenges (author_id, nickname, word, attempts, expiration_date)
+        VALUES (${challenge.author}, ${challenge.nickname}, ${challenge.word}, ${challenge.attempts}, ${challenge.expiration})
         ON CONFLICT (id) DO NOTHING;
         `,
     ),
@@ -61,6 +75,7 @@ async function seedAttempts() {
   await client.sql`
   CREATE TABLE IF NOT EXISTS attempts (
       id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+      session_id UUID NOT NULL references sessions(id),
       challenge_id UUID NOT NULL references challenges(id),
       guess VARCHAR(255) NOT NULL,
       attempt_number INT NOT NULL
@@ -74,6 +89,7 @@ export async function GET() {
     await seedUsers();
     await seedChallenges();
     await seedAttempts();
+    await seedSessions();
     await client.sql`COMMIT`;
 
     return Response.json({ message: 'Database seeded successfully' });
