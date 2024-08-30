@@ -12,7 +12,7 @@ export async function fetchChallenge(id: string) {
     // await new Promise((resolve) => setTimeout(resolve, 3000));
 
     //const data = await sql<Challenge>`SELECT * FROM challenges WHERE id = '2064defa-9add-4d08-9108-e750a53c76eb' `;
-    const data = await sql<Challenge>`SELECT * FROM challenges WHERE id = ${id} `;
+    const data = await sql<Challenge>`SELECT * FROM challenges WHERE nickname = ${id} `;
 
     console.log('Data fetch completed after 3 seconds.');
 
