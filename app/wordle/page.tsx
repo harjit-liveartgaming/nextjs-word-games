@@ -61,66 +61,78 @@ export default function Page() {
     }
   }
 
-  let submitWord = () => {
+  let submitWord = async () => {
+
+    //api only returns an object with a title property when its an
+
     if (guessWord.length == selectedWord.length) {
-      let gScan = new Map();
-      let wScan = new Map();
+      try {
+        debugger
+        let data = await fetch("https://api.dictionaryapi.dev/api/v2/entries/en/" + guessWord);
+        
+        if (data.status != 404) {
+          let gScan = new Map();
+          let wScan = new Map();
 
-      let perfect = true;
+          let perfect = true;
 
-      for (let i = 0; i < guessWord.length; i++) {
-        let _gl = guessWord[i]
-        let _wl = selectedWord[i]
+          for (let i = 0; i < guessWord.length; i++) {
+            let _gl = guessWord[i]
+            let _wl = selectedWord[i]
 
-        if (_gl == _wl) {
-          gameBoard[currentAttempt].tiles[i].status = 'correct-location'
-        } else {
-          perfect = false;
-          let _gs: Array<number>;
-          if (gScan.has(_gl)) {
-            _gs = gScan.get(_gl);
-          } else {
-            _gs = new Array<number>();
-          }
-
-          _gs.push(i);
-          gScan.set(_gl, _gs);
-
-          let _ws: Array<number>;
-          if (wScan.has(_wl)) {
-            _ws = wScan.get(_wl);
-          } else {
-            _ws = new Array<number>();
-          }
-
-          _ws.push(i);
-          wScan.set(_wl, _ws);
-        }
-      }
-
-      if (!perfect) {
-        gScan.forEach((g_is: Array<number>, l: string) => {
-          let w_is = wScan.get(l);
-
-          for (let i = 0; i < g_is.length; i++) {
-            let g_index = g_is[i] as number;
-            if (w_is != null && i < w_is.length) {
-              gameBoard[currentAttempt].tiles[g_index].status = 'correct-letter'
+            if (_gl == _wl) {
+              gameBoard[currentAttempt].tiles[i].status = 'correct-location'
             } else {
-              gameBoard[currentAttempt].tiles[g_index].status = 'submitted'
+              perfect = false;
+              let _gs: Array<number>;
+              if (gScan.has(_gl)) {
+                _gs = gScan.get(_gl);
+              } else {
+                _gs = new Array<number>();
+              }
+
+              _gs.push(i);
+              gScan.set(_gl, _gs);
+
+              let _ws: Array<number>;
+              if (wScan.has(_wl)) {
+                _ws = wScan.get(_wl);
+              } else {
+                _ws = new Array<number>();
+              }
+
+              _ws.push(i);
+              wScan.set(_wl, _ws);
             }
           }
-        })
-        setCurrentAttempt(currentAttempt + 1);
+
+          if (!perfect) {
+            gScan.forEach((g_is: Array<number>, l: string) => {
+              let w_is = wScan.get(l);
+
+              for (let i = 0; i < g_is.length; i++) {
+                let g_index = g_is[i] as number;
+                if (w_is != null && i < w_is.length) {
+                  gameBoard[currentAttempt].tiles[g_index].status = 'correct-letter'
+                } else {
+                  gameBoard[currentAttempt].tiles[g_index].status = 'submitted'
+                }
+              }
+            })
+            setCurrentAttempt(currentAttempt + 1);
+          }
+
+          if (perfect || currentAttempt == maxAttempts) {
+            setGameState("end-game")
+          }
+
+
+          setGameBoard(gameBoard);
+          setGuess("");
+        }
+      } catch {
+        console.log("not a word");
       }
-
-      if (perfect || currentAttempt == maxAttempts) {
-        setGameState("end-game")
-      }
-
-
-      setGameBoard(gameBoard);
-      setGuess("");
     }
 
   }
@@ -133,15 +145,15 @@ export default function Page() {
     switch (gameState) {
       case "set-up-form":
         return (
-          <SetUpForm 
-            setRoom={(e)=>{ setRoom(e.currentTarget.value); return false;}}
+          <SetUpForm
+            setRoom={(e) => { setRoom(e.currentTarget.value); return false; }}
             room={room}
             maxAttempts={maxAttempts}
-            setMaxAttempts={(e)=>{setMaxAttempts(e.currentTarget.valueAsNumber); return false;}}
+            setMaxAttempts={(e) => { setMaxAttempts(e.currentTarget.valueAsNumber); return false; }}
             selectedWord={selectedWord}
-            setSelectedWord={(e)=>{setWord(e.currentTarget.value); return false;}}
-            initializeGame={()=> {initializeGame(selectedWord, maxAttempts); return false;}}
-            joinChallenge={()=>{joinChallenge(); return false;}}
+            setSelectedWord={(e) => { setWord(e.currentTarget.value); return false; }}
+            initializeGame={() => { initializeGame(selectedWord, maxAttempts); return false; }}
+            joinChallenge={() => { joinChallenge(); return false; }}
           />
         )
         break;
@@ -182,11 +194,11 @@ export default function Page() {
         )
         break;
 
-        default:
-          return (
-            <div></div>
-          )
-          break;
+      default:
+        return (
+          <div></div>
+        )
+        break;
     }
   }
 
